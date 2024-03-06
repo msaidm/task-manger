@@ -1,4 +1,5 @@
 'use client'
+import Editor from '@/components/Editor'
 import MainInput from '@/components/MainInput'
 import MainText from '@/components/MainText'
 import IconClose from '@/resorces/SVGs/exitIcon'
@@ -11,6 +12,8 @@ import React, { useState, useRef, useEffect } from 'react'
 function Modal({ task, onClose, onUpdate, onDelete, onClickEdit }) {
   const [isChecked, setIsChecked] = useState(task.completed || false); // Initialize based on task.completed if present
   const [isEditClicked, setIsEditClicked] = useState(false);
+  const [content, setContent] = useState('');
+
   const modalRef = useRef(null);
 
 
@@ -18,6 +21,10 @@ function Modal({ task, onClose, onUpdate, onDelete, onClickEdit }) {
     setIsChecked(!isChecked);
     onUpdate({ ...task, completed: !isChecked }); // Update task with new completed state
   };
+  const handleEditorChange = (newContent) => {
+    console.log(newContent)
+    setContent(newContent);
+};
 
   const handleSave = () => {
     // Implement logic to save the updated task (e.g., call an API)
@@ -49,7 +56,7 @@ function Modal({ task, onClose, onUpdate, onDelete, onClickEdit }) {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-      <div ref={modalRef} className="bg-white  w-1/4 rounded-lg p-4 shadow-md ">
+      <div ref={modalRef} className="bg-white  w-1/4 rounded-lg p-4 shadow-md min-w-60">
         <IconClose width='20px' height='20px' onClick={onClose} className={"cursor-pointer flex-end"} />
         <div className='flex flex-row justify-between items-center'>
           <div>
@@ -105,7 +112,8 @@ function Modal({ task, onClose, onUpdate, onDelete, onClickEdit }) {
               <label className="block mt-1">
                 <MainText>Description:</MainText>
               </label>
-              <MainInput value={task.description}></MainInput>
+              {/* <MainInput value={task.description}></MainInput> */}
+              <Editor value={content} onChangeValue={handleEditorChange}/>
 
             </div>
           ) : (
