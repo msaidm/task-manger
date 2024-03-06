@@ -1,6 +1,5 @@
+import Sidebar from "@/components/SideBar";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import StoreProvider from "../../lib/StorePrivider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,13 +8,16 @@ export const metadata = {
   description: "Manage your tasks easily",
 };
 
-export default function RootLayout({ children }) {
+export default function HomeLayout({ children }) {
   return (
     <html lang="en">
+        
       <body className={inter.className}>
-        <StoreProvider>
+        <Sidebar/>
         {children}
-        </StoreProvider>
+       
+        
+        
         </body>
     </html>
   );
