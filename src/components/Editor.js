@@ -6,8 +6,8 @@ import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 const QuillEditor = dynamic(() => import('react-quill'), { ssr: false });
 
 
-export default function Editor({value,onChangeValue}) {
-    
+export default function Editor({ value, onChangeValue }) {
+
 
 
     const quillModules = {
@@ -15,7 +15,7 @@ export default function Editor({value,onChangeValue}) {
             [{ header: [1, 2, 3, false] }],
             ['bold', 'italic', 'underline', 'strike', 'blockquote'],
             [{ list: 'ordered' }, { list: 'bullet' }],
-            ['link', ],
+            ['link',],
             [{ align: [] }],
             [{ color: [] }],
             ['code-block'],
@@ -41,19 +41,19 @@ export default function Editor({value,onChangeValue}) {
     ];
 
 
-    
+
 
 
     return (
-        
-                <div >
-                    <QuillEditor
-                        value={value}
-                        onChange={onChangeValue}
-                        modules={quillModules}
-                        formats={quillFormats}
-                        className="w-full h-[70%] mt-10 bg-white"
-                    />
-                </div>
+
+        <div >
+            <QuillEditor
+                value={value}
+                onChange={onChangeValue}
+                modules={quillModules}
+                formats={quillFormats}
+                className="w-full h-[70%] mt-1 bg-white"
+            />
+        </div>
     );
 }
