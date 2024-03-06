@@ -13,8 +13,10 @@ export default function HomeLayout({ children }) {
     <html lang="en">
         
       <body className={inter.className}>
+      <main className="flex min-h-screen  p-10 bg-mainHomeBackgroundColor">
         <Sidebar/>
         {children}
+        </main>
        
         
         

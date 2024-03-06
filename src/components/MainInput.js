@@ -3,14 +3,14 @@ import MainText from './MainText'; // Assuming you have a MainText component
 import IconEye from '@/resorces/SVGs/eyeIcon';
 import IconEyeInvisible from '@/resorces/SVGs/eyeInvisibleicon';
 
-const MainInput = ({ type, placeholder, value, onChange, errorMessage, isPassword, togglePasswordVisibility }) => {
+const MainInput = ({ type, placeholder, value, onChange, errorMessage, isPassword, togglePasswordVisibility ,className, width}) => {
   return (
     <div className="h-10 m-3 relative">
-    <div className='flex items-center'>
+    <div className={width?`flex items-center ${width}`:'flex items-center w-1/2'}>
       <input
         type={type ? type : "text"}
         placeholder={placeholder}
-        className="flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
+        className={"flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"}
         value={value}
         onChange={onChange}
       />
