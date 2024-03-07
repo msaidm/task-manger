@@ -18,6 +18,11 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
 
+import { useAppSelector, useAppDispatch, useAppStore } from '../../../../lib/hooks'
+import { useRouter } from 'next/navigation'
+
+
+
 const TaskLazyComponent = React.lazy(() => import("../../../components/TaskComponent"));
 
 function page() {
@@ -50,7 +55,21 @@ function page() {
 
 
   const [userTasks, setUserTasks] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
+
+  const router = useRouter();
+
   const [userInProgressTasks, setUserInProgressTasks] = useState([]);
+
+  // Initialize the store with the product information
+  const store = useAppStore()
+  const initialized = useRef(false)
+  // if (!initialized.current) {
+  //   store.dispatch(l(product))
+  //   initialized.current = true
+  // }
+  const userInfoRedux = useAppSelector(state =>state.authReducer )
+  const dispatch = useAppDispatch()
 
 
 
@@ -59,12 +78,19 @@ function page() {
 
 
   useEffect(() => {
-    fetchData()
+    const userDataString = localStorage.getItem('userData');
+    const userData = JSON.parse(userDataString);
+    if(!userData.isLoggedIn){
+      return router.push('/')
+    }
+
+    setUserInfo(userData)
+    fetchData(userData.uid)
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (uid) => {
     try {
-      const { tasks, error } = await getTasksForUser("NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1");
+      const { tasks, error } = await getTasksForUser(uid);
 
       if (error) {
         setError(error.message);
@@ -114,7 +140,6 @@ function page() {
     if (event) {
       setNewTaskTitleError("")
       setNewTaskTitle(event.target.value);
-      console.log(event.target.value)
     }
     else {
       setNewTaskTitle("");
@@ -126,7 +151,7 @@ function page() {
     try {
       await deleteTask(`Tasks--${env}`,taskId)
       setSelectedTask(undefined)
-      fetchData()
+      fetchData(userInfo.uid)
     } catch (error) {
 
     }
@@ -136,7 +161,6 @@ function page() {
     if (event) {
       setNewTaskDueDateError("")
       setNewTaskDueDate(event.target.value);
-      console.log(event.target.value)
     }
     else {
       setNewTaskDueDate('');
@@ -156,7 +180,6 @@ function page() {
     if (event) {
       setNewTaskTitleEditError("")
       setNewTaskEditTitle(event.target.value);
-      console.log(event.target.value)
     }
     else {
       setNewTaskEditTitle("");
@@ -167,7 +190,6 @@ function page() {
     if (event) {
       setNewTaskEditDueDateError("")
       setNewTaskEditDueDate(event.target.value);
-      console.log(event.target.value)
     }
     else {
       setNewTaskEditDueDate('');
@@ -210,7 +232,7 @@ function page() {
         taskTitle: newTaskTitle,
         taskDueDate: newTaskDueDate,
         taskDescription: newTaskDescription,
-        userUid: "NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1",
+        userUid: userInfo.uid,
         taskId: taskId,
         isTaskCompleted: false,
       }
@@ -261,12 +283,12 @@ function page() {
         taskTitle: newTaskTitle,
         taskDueDate: newTaskDueDate,
         taskDescription: newTaskDescription,
-        userUid: "NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1",
+        userUid: userInfo.uid,
         taskId: taskId,
         isTaskCompleted: false,
       }
       await addData(`Tasks--${env}`, taskId, taskData)
-      fetchData()
+      fetchData(userInfo.uid)
       setShowNewTaskModal(false)
       return true
 
@@ -343,6 +365,7 @@ function page() {
             onSave={handleAddNewTaskEditSaveButton}
             fetchData={fetchData}
             handleDeleteTask={handleDeleteTask}
+            userUid={userInfo.uid}
 
           />
         )}

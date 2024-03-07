@@ -7,7 +7,7 @@ const db = getFirestore(firebase_app);
 export default async function getTasksForUser(userId) {
     try {
         // Query tasks collection where userId matches
-        const q = query(collection(db, `Tasks--${env}`), where('userUid', '==', userId));
+        const q = query(collection(db, `Tasks--${env}`),where('userUid', '==', userId));
         
         // Get all documents that match the query
         const querySnapshot = await getDocs(q);

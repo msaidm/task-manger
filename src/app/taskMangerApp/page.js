@@ -18,7 +18,6 @@ function Page() {
         }
 
         // else successful
-        console.log(result)
         return router.push("/admin")
     }
     return (

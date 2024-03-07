@@ -25,7 +25,8 @@ function TaskModal({
   dueDateErrorMessage,
   descriptionError,
   fetchData,
-  handleDeleteTask
+  handleDeleteTask,
+  userUid
 
 }) {
   const [isChecked, setIsChecked] = useState(false); // Initialize based on task.completed if present
@@ -52,7 +53,6 @@ function TaskModal({
     if (event) {
       setNewTaskTitleEditError("")
       setNewTaskTitle(event.target.value);
-      //console.log(event.target.value)
     }
     else {
       setNewTaskTitle("");
@@ -63,7 +63,6 @@ function TaskModal({
     if (event) {
       setNewTaskEditDueDateError("")
       setNewTaskDueDate(event.target.value);
-      //console.log(event.target.value)
     }
     else {
       setNewTaskTitle("");
@@ -150,12 +149,12 @@ function TaskModal({
         taskTitle: newTaskTitle,
         taskDueDate: newTaskDueDate,
         taskDescription: newTaskDescription,
-        userUid: "NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1",
+        userUid: userUid,
         taskId: task.taskId,
         isTaskCompleted: isTaskCompleted,
       }
       await updateData(`Tasks--${env}`, task.taskId, taskData)
-      fetchData()
+      fetchData(userUid)
       onClose()
       return true
 

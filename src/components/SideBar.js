@@ -21,8 +21,8 @@ const Sidebar = () => {
 
     const handleAccountClick = () => {
         setIsTaskClicked(true)
-
-        router.push('/home/account');
+        localStorage.setItem('userData', JSON.stringify({ name: "", uid: '',isLoggedIn:false }));
+        router.push('/');
     };
 
 
