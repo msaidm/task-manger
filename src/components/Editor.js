@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import MainText from './MainText';
 
 
 const QuillEditor = dynamic(() => import('react-quill'), { ssr: false });
 
 
-export default function Editor({ value, onChangeValue }) {
+export default function Editor({ value, onChangeValue, errorMessage }) {
 
 
 
@@ -46,7 +47,7 @@ export default function Editor({ value, onChangeValue }) {
 
     return (
 
-        <div >
+        <div className='flex flex-col' >
             <QuillEditor
                 value={value}
                 onChange={onChangeValue}
@@ -54,6 +55,13 @@ export default function Editor({ value, onChangeValue }) {
                 formats={quillFormats}
                 className="w-full h-[70%] mt-1 bg-white"
             />
+            {errorMessage && (
+                <MainText  style={{ width: "200px" }} fontSize={12} color="red">
+                    {errorMessage}
+                </MainText>
+            )}
+
+
         </div>
     );
 }

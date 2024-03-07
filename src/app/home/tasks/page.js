@@ -1,30 +1,24 @@
 'use client'
-import { generateUniqueId } from '@/Helpers/tools'
+import { env } from '@/Helpers/constans'
+import { generateUniqueId, isValidDateFormat, useSeparateTasks } from '@/Helpers/tools'
 import Editor from '@/components/Editor'
 import MainInput from '@/components/MainInput'
 import MainText from '@/components/MainText'
 import NewTaskModal from '@/components/NewTaskModal'
+import TaskComponent from '@/components/TaskComponent'
 import TaskModal from '@/components/TaskModal'
 import addData from '@/firebase/firestore/addData'
+import deleteTask from '@/firebase/firestore/deleteTask'
+import getTasksForUser from '@/firebase/firestore/getTasks'
 import IconClose from '@/resorces/SVGs/exitIcon'
 import TasksCompletedIcon from '@/resorces/SVGs/tasksCompleted'
 import TasksInProgressIcon from '@/resorces/SVGs/tasksInprogress'
-import React, { useState, useRef, useEffect } from 'react'
-
-// ... other components
-
-
-
-function TaskItem({ task, onTaskClick }) {
-  return (
-    <li className="cursor-pointer border-b border-gray-300 pb-4 mb-4 mt-1" onClick={() => onTaskClick(task)}>
-      <MainText>{task.title}</MainText>
-      <MainText>{task.description}</MainText>
-    </li>
-  );
-}
+import React, { useState, useRef, useEffect, useMemo, Suspense } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 
+const TaskLazyComponent = React.lazy(() => import("../../../components/TaskComponent"));
 
 function page() {
   // Dummy data for tasks
@@ -42,60 +36,249 @@ function page() {
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskDescriptionError, setNewDescriptionError] = useState("");
 
+  const [newTaskEditTitle, setNewTaskEditTitle] = useState("");
+  const [newTaskTitleEditError, setNewTaskTitleEditError] = useState("");
+
+  const [newTaskEditDueDate, setNewTaskEditDueDate] = useState("");
+  const [newTaskDueDateEditError, setNewTaskEditDueDateError] = useState("");
+
+
+  const [newTaskEditDescription, setNewTaskEditDescription] = useState("");
+  const [newTaskDescriptionEditError, setNewDescriptionEditError] = useState("");
+
+  const [isTaskCompleted, setIsTaskCompleted] = useState("");
+
+
+  const [userTasks, setUserTasks] = useState([]);
+  const [userInProgressTasks, setUserInProgressTasks] = useState([]);
+
+
+
+
+
+
+
+  useEffect(() => {
+    fetchData()
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const { tasks, error } = await getTasksForUser("NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1");
+
+      if (error) {
+        setError(error.message);
+        alert(error);
+      } else {
+
+        const { completedTasks, incompleteTasks } = separateTasks(tasks)
+        setUserTasks(completedTasks);
+        setUserInProgressTasks(incompleteTasks)
+        //alert(tasks)
+      }
+    } catch (error) {
+      alert(error)
+      //setError(error.message);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  function separateTasks(tasks) {
+    const completedTasks = [];
+    const incompleteTasks = [];
+
+    tasks.forEach(task => {
+      if (task.isTaskCompleted) {
+        completedTasks.push(task);
+      } else {
+        incompleteTasks.push(task);
+      }
+    });
+
+    return { completedTasks, incompleteTasks };
+  }
+
+
+
+  // Update the state accordingly
+
+
+
+
+
+
 
 
   const handleNewTaskTitleChange = (event) => {
-    setNewTaskTitleError("")
-    setNewTaskTitle(event.target.value);
-    console.log(event.target.value)
+    if (event) {
+      setNewTaskTitleError("")
+      setNewTaskTitle(event.target.value);
+      console.log(event.target.value)
+    }
+    else {
+      setNewTaskTitle("");
+    }
+
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(`Tasks--${env}`,taskId)
+      setSelectedTask(undefined)
+      fetchData()
+    } catch (error) {
+
+    }
 
   };
   const handleNewTaskDueDateChange = (event) => {
-    setNewTaskDueDateError("")
-    setNewTaskDueDate(event.target.value);
-    console.log(event.target.value)
+    if (event) {
+      setNewTaskDueDateError("")
+      setNewTaskDueDate(event.target.value);
+      console.log(event.target.value)
+    }
+    else {
+      setNewTaskDueDate('');
+    }
+
 
   };
-  const handleNewTaskDescriptionsChange = (newContent) => {
 
-    setNewTaskDescription(newContent);
+
+  const handleNewTaskEditDescriptionsChange = (newContent) => {
+    setNewDescriptionEditError('')
+
+    setNewTaskEditDescription(newContent);
   };
-  const handleAddNewTaskSaveButton = async () => {
+
+  const handleNewTaskEditTitleChange = (event) => {
+    if (event) {
+      setNewTaskTitleEditError("")
+      setNewTaskEditTitle(event.target.value);
+      console.log(event.target.value)
+    }
+    else {
+      setNewTaskEditTitle("");
+    }
+
+  };
+  const handleNewTaskEditDueDateChange = (event) => {
+    if (event) {
+      setNewTaskEditDueDateError("")
+      setNewTaskEditDueDate(event.target.value);
+      console.log(event.target.value)
+    }
+    else {
+      setNewTaskEditDueDate('');
+    }
+
+  };
+
+  const handleChangeIsCompleted = () => {
+    setIsTaskCompleted(prev => !prev)
+
+  };
+
+  const handleAddNewTaskEditSaveButton = async () => {
     const taskId = generateUniqueId()
+    if (newTaskEditTitle === "" && newTaskEditDescription === "" && newTaskEditDueDate === "") {
+      setNewTaskTitleError("Please enter the title")
+      setNewDescriptionError("Please enter the task description")
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskEditTitle === "") {
+      setNewTaskTitleError("Please enter the title")
+      return;
+    }
+    else if (newTaskEditDueDate === "") {
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskEditDescription === "") {
+      setNewDescriptionError("Please enter the task description")
+      return;
+    }
+    else if (!isValidDateFormat(newTaskEditDueDate)) {
+      setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
+      return;
+
+    }
     try {
       let taskData = {
         taskTitle: newTaskTitle,
         taskDueDate: newTaskDueDate,
         taskDescription: newTaskDescription,
         userUid: "NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1",
-        taskId: taskId
+        taskId: taskId,
+        isTaskCompleted: false,
       }
-      await addData(`Tasks--`, taskId, taskData)
+      await addData(`Tasks--${env}`, taskId, taskData)
+      setShowNewTaskModal(false)
+      return true
 
     } catch (error) {
       alert(error)
+      return false
+    }
+
+  };
+  {/*---------END Edit Task Functions--------------- */ }
+  const handleNewTaskDescriptionsChange = (newContent) => {
+    setNewDescriptionError('')
+
+    setNewTaskDescription(newContent);
+  };
+  const handleAddNewTaskSaveButton = async () => {
+    const taskId = generateUniqueId()
+    if (newTaskTitle === "" && newTaskDescription === "" && newTaskDueDate === "") {
+      setNewTaskTitleError("Please enter the title")
+      setNewDescriptionError("Please enter the task description")
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskTitle === "") {
+      setNewTaskTitleError("Please enter the title")
+      return;
+    }
+    else if (newTaskDueDate === "") {
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskDescription === "") {
+      setNewDescriptionError("Please enter the task description")
+      return;
+    }
+    else if (!isValidDateFormat(newTaskDueDate)) {
+      setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
+      return;
+
+    }
+
+    try {
+      let taskData = {
+        taskTitle: newTaskTitle,
+        taskDueDate: newTaskDueDate,
+        taskDescription: newTaskDescription,
+        userUid: "NjGIPGyZwHZ7WSvNHoyiJ4RLRRl1",
+        taskId: taskId,
+        isTaskCompleted: false,
+      }
+      await addData(`Tasks--${env}`, taskId, taskData)
+      fetchData()
+      setShowNewTaskModal(false)
+      return true
+
+    } catch (error) {
+      alert(error)
+      return false
     }
 
 
 
 
   };
-
-
-
-
-
-
-
-  const tasks = [
-    { id: '1', title: 'Task 1', description: 'Description of Task 1', dueDate: '1/1/2024', dueClock: "2:09 PM" },
-    { id: '2', title: 'Task 2', description: 'Description of Task 2', dueDate: '1/2/2024', dueClock: "2:09 PM" },
-    { id: '3', title: 'Task 2', description: 'Description of Task 2', dueDate: '1/2/2024', dueClock: "2:09 PM" },
-    { id: '4', title: 'Task 2', description: 'Description of Task 2', dueDate: '1/2/2024', dueClock: "2:09 PM" },
-    { id: '5', title: 'Task 2', description: 'Description of Task 2', dueDate: '1/2/2024', dueClock: "2:09 PM" },
-    // Add more tasks as needed
-  ];
-
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -119,48 +302,49 @@ function page() {
     <div className='w-full flex flex-col item-center'>
       <div className='w-1/2  flex self-center flex-col sm:flex-row'>
 
-        <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-40 mt-5 border border-gray-300'>
-          <div className='items-center flex flex-row justify-between'>
-            <TasksInProgressIcon />
-            <MainText color={"#8C97A8"}>Tasks In Progress</MainText>
-            <MainText>90</MainText>
-          </div>
-          <div className="h-px grayText mt-2 bg-grayText"></div>
-
-          {/* Render tasks using a scrollable container */}
-          <div className="h-60 overflow-y-auto">
-            <ul>
-              {tasks.map(task => (
-                <TaskItem key={task.id} task={task} onTaskClick={handleTaskClick} />
-              ))}
-            </ul>
-          </div>
+        <Suspense fallback={<Skeleton />} >
+          <TaskLazyComponent
+            IconComponent={TasksCompletedIcon}
+            title="Tasks In Progress"
+            tasksCount={userInProgressTasks.length}
+            userTasks={userInProgressTasks}
+            handleTaskClick={handleTaskClick}
+            completedTasks={false}
+          />
 
 
+          <TaskLazyComponent
+            IconComponent={TasksCompletedIcon}
+            title="Tasks Completed"
+            tasksCount={userTasks.length}
+            userTasks={userTasks}
+            handleTaskClick={handleTaskClick}
+            completedTasks={false}
+          />
 
-        </div>
-        <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-40 mt-5 border border-gray-300'>
-          <div className='items-center flex flex-row justify-between'>
-            <TasksCompletedIcon />
-            <MainText color={"#8C97A8"}>Tasks Completed</MainText>
-            <MainText>90</MainText>
-          </div>
-          <div className="h-px grayText mt-2 bg-grayText"></div>
-
-          {/* Render tasks using a scrollable container */}
-          <div className="h-60 overflow-y-auto">
-            <ul>
-              {tasks.map(task => (
-                <TaskItem key={task.id} task={task} onTaskClick={handleTaskClick} />
-              ))}
-            </ul>
-          </div>
-        </div>
+        </Suspense>
 
 
         {/* Modal */}
         {selectedTask && (
-          <TaskModal task={selectedTask} onClose={handleCloseModal} onClickEdit={handleEditClick} />
+          <TaskModal
+            onClose={handleCloseModal}
+            onClickEdit={handleEditClick}
+            title={newTaskEditTitle}
+            setTitle={handleNewTaskEditTitleChange}
+            titleErrorMessage={newTaskTitleEditError}
+            dueDate={newTaskEditDueDate}
+            setDueDate={handleNewTaskEditDueDateChange}
+            dueDateErrorMessage={newTaskDueDateEditError}
+            description={newTaskEditDescription}
+            setDescription={handleNewTaskEditDescriptionsChange}
+            descriptionError={newTaskDescriptionEditError}
+            task={selectedTask}
+            onSave={handleAddNewTaskEditSaveButton}
+            fetchData={fetchData}
+            handleDeleteTask={handleDeleteTask}
+
+          />
         )}
         {showNewTaskModal && (
           <NewTaskModal
@@ -172,9 +356,10 @@ function page() {
             dueDateErrorMessage={newTaskDueDateError}
             description={newTaskDescription}
             setDescription={handleNewTaskDescriptionsChange}
+            descriptionError={newTaskDescriptionError}
             task={selectedTask}
             onClose={handleCloseNewTaskModal}
-            onClickEdit={handleEditClick}
+            handleEditorChange={handleEditClick}
             onSave={handleAddNewTaskSaveButton}
           />
         )}
@@ -182,8 +367,8 @@ function page() {
 
 
       </div>
-      <button onClick={handleNewTaskClick} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-10 w-1/5 self-center">
-        Add new Task
+      <button onClick={handleNewTaskClick} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-10 w-1/5 self-center min-w-30">
+        Add a new Task
       </button>
 
     </div>

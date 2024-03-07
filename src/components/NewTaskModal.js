@@ -19,9 +19,11 @@ function NewTaskModal({
   onSave,
   handleEditorChange,
   titleErrorMessage,
-  dueDateErrorMessage
-  
- }) {
+  dueDateErrorMessage,
+  descriptionError,
+  fetchData,
+
+}) {
   const [isChecked, setIsChecked] = useState(false); // Initialize based on task.completed if present
   const [isEditClicked, setIsEditClicked] = useState(false);
   // const [content, setContent] = useState('');
@@ -31,10 +33,15 @@ function NewTaskModal({
 
 
 
-  const handleSave =async () => {
+  const handleSave = async () => {
     // Implement logic to save the updated task (e.g., call an API)
-    await onSave(); // Close the modal after saving
-    onClose()
+    const result = await onSave(); // Close the modal after saving
+    if (result) {
+      setTitle("")
+      setDueDate("")
+      setDescription("")
+    }
+
   };
   const handleEdit = () => {
     // Implement logic to save the updated task (e.g., call an API)
@@ -80,19 +87,19 @@ function NewTaskModal({
               <MainText>Due Date:</MainText>
             </label>
             <div>
-              <MainInput value={dueDate} placeholder={"M/D/YYYY"} onChange={setDueDate} errorMessage={titleErrorMessage} ></MainInput>
+              <MainInput value={dueDate} placeholder={"M/D/YYYY"} onChange={setDueDate} errorMessage={dueDateErrorMessage} ></MainInput>
             </div>
 
           </div>
 
         </div>
-        <div>
-          <div>
+        <div className="mt-10">
+          <div >
             <label className="block mt-1">
               <MainText>Description:</MainText>
             </label>
             {/* <MainInput value={task.description}></MainInput> */}
-            <Editor value={description} onChangeValue={setDescription} />
+            <Editor value={description} onChangeValue={setDescription} errorMessage={descriptionError} />
 
           </div>
 
