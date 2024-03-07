@@ -150,9 +150,15 @@ const LoginForm = () => {
     const { result, error } = await signIn(emailLogin, passwordLogin);
 
     if (error) {
-      alert(error)
-      return console.log(error);
-    }
+      const errorMessage = error.message || ''; 
+  
+      if (errorMessage.includes('auth/invalid-credential')) {
+          alert('Invalid email or password');
+      } else {
+        alert('Error occurred');
+          console.error(error);
+      }
+  }
     else if (result) {
       const user = result.user
       //alert(user.uid)
@@ -200,9 +206,17 @@ const LoginForm = () => {
       const { result, error } = await signUp(email, password);
 
       if (error) {
-        alert(error)
-        return console.log(error)
-      }
+        const errorMessage = error.message || ''; // Get the error message
+    
+        // Check if the error message contains the specified string
+        if (errorMessage.includes('auth/invalid-credential')) {
+            // Handle the error related to invalid credentials
+            alert('Invalid credentials email or password');
+        } else {
+            // Handle other types of errors
+            console.error(error);
+        }
+    }
 
       // else successful
       

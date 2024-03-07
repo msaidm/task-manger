@@ -47,21 +47,19 @@ export default function Editor({ value, onChangeValue, errorMessage }) {
 
     return (
 
-        <div className='flex flex-col' >
+        <div className='flex flex-col' style={{ maxHeight: '200px', overflowY: 'auto' }}>
             <QuillEditor
                 value={value}
                 onChange={onChangeValue}
                 modules={quillModules}
                 formats={quillFormats}
-                className="w-full h-[70%] mt-1 bg-white"
+                className="w-full bg-white"
             />
             {errorMessage && (
-                <MainText  style={{ width: "200px" }} fontSize={12} color="red">
+                <MainText style={{ width: "200px" }} fontSize={12} color="red">
                     {errorMessage}
                 </MainText>
             )}
-
-
         </div>
     );
 }

@@ -68,7 +68,7 @@ function page() {
   //   store.dispatch(l(product))
   //   initialized.current = true
   // }
-  const userInfoRedux = useAppSelector(state =>state.authReducer )
+  const userInfoRedux = useAppSelector(state => state.authReducer)
   const dispatch = useAppDispatch()
 
 
@@ -80,7 +80,7 @@ function page() {
   useEffect(() => {
     const userDataString = localStorage.getItem('userData');
     const userData = JSON.parse(userDataString);
-    if(!userData.isLoggedIn){
+    if (!userData.isLoggedIn) {
       return router.push('/')
     }
 
@@ -149,7 +149,7 @@ function page() {
 
   const handleDeleteTask = async (taskId) => {
     try {
-      await deleteTask(`Tasks--${env}`,taskId)
+      await deleteTask(`Tasks--${env}`, taskId)
       setSelectedTask(undefined)
       fetchData(userInfo.uid)
     } catch (error) {
@@ -321,28 +321,31 @@ function page() {
   };
 
   return (
-    <div className='w-full flex flex-col item-center'>
-      <div className='w-1/2  flex self-center flex-col sm:flex-row'>
+    <div className='w-full flex flex-col items-center'>
+      <div className='w-1/2  flex self-center justify-center flex-col sm:flex-row'>
 
         <Suspense fallback={<Skeleton />} >
           <TaskLazyComponent
             IconComponent={TasksCompletedIcon}
-            title="Tasks In Progress"
+            title="To-Do List"
             tasksCount={userInProgressTasks.length}
             userTasks={userInProgressTasks}
             handleTaskClick={handleTaskClick}
             completedTasks={false}
           />
 
+          {userTasks.length > 0 && (
+            <TaskLazyComponent
+              IconComponent={TasksCompletedIcon}
+              title="Tasks Completed"
+              tasksCount={userTasks.length}
+              userTasks={userTasks}
+              handleTaskClick={handleTaskClick}
+              completedTasks={true}
+            />
 
-          <TaskLazyComponent
-            IconComponent={TasksCompletedIcon}
-            title="Tasks Completed"
-            tasksCount={userTasks.length}
-            userTasks={userTasks}
-            handleTaskClick={handleTaskClick}
-            completedTasks={false}
-          />
+          )}
+
 
         </Suspense>
 
