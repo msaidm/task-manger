@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import MainText from './MainText';
 import { useState } from 'react';
-import IconListTask from '../resorces/SVGs/tasksIcon';
-import IconLogoutBoxLine from '../resorces/SVGs/logoutIcon';
+import IconListTask from '../resources/SVGs/tasksIcon';
+import IconLogoutBoxLine from '../resources/SVGs/logoutIcon';
 
 const Sidebar = () => {
     const router = useRouter();

@@ -1,7 +1,7 @@
 import React from 'react';
 import MainText from './MainText'; // Assuming you have a MainText component
-import IconEye from '../resorces/SVGs/eyeIcon';
-import IconEyeInvisible from '../resorces/SVGs/eyeInvisibleicon';
+import IconEye from '../resources/SVGs/eyeIcon';
+import IconEyeInvisible from '../resources/SVGs/eyeInvisibleIcon';
 
 const MainInput = ({ type, placeholder, value, onChange, errorMessage, isPassword, togglePasswordVisibility ,className, width}) => {
   return (

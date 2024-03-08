@@ -5,7 +5,7 @@ import Editor from '../components/Editor'
 import MainInput from '../components/MainInput'
 import MainText from '../components/MainText'
 import updateData from '../firebase/firestore/updateData'
-import IconClose from '../resorces/SVGs/exitIcon'
+import IconClose from '../resources/SVGs/exitIcon'
 
 import React, { useState, useRef, useEffect } from 'react'
 
