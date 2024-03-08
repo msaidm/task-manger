@@ -3,7 +3,7 @@
 
 ## Task Manger App:
 
-I used Next.js and Firebase to develop a proficient task management tool. Users have the capability to register accounts, log in, create tasks, edit existing tasks, and delete tasks seamlessly. Each task is equipped with a title, due date, completion status, and description, which can be manipulated using a rich text editor for enhanced functionality and user experience.
+I used Next.js, Firebase to develop a proficient task management tool and Redux for global states. Users have the capability to register accounts, log in, create tasks, edit existing tasks, and delete tasks seamlessly. Each task is equipped with a title, due date, completion status, and description, which can be manipulated using a rich text editor for enhanced functionality and user experience.
 
 ## System Requirements:
 
