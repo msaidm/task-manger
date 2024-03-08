@@ -159,9 +159,11 @@ function page() {
     }
 
   };
-  const handleNewTaskDueDateChange = (date) => {
-    if (date) {
-      setStartDate(date)
+  const handleNewTaskDueDateChange = (event) => {
+    if (event) {
+      //setStartDate(date)
+      setNewTaskDueDateError("")
+      setNewTaskDueDate(event.target.value);
 
     }
     else {
@@ -256,7 +258,7 @@ function page() {
   };
   const handleAddNewTaskSaveButton = async () => {
     const taskId = generateUniqueId()
-    if (newTaskTitle.trim() === "" && newTaskDescription.trim() === "" && startDate === "") {
+    if (newTaskTitle.trim() === "" && newTaskDescription.trim() === "" && newTaskDueDate === "") {
       setNewTaskTitleError("Please enter the title")
       setNewDescriptionError("Please enter the task description")
       setNewTaskDueDateError("Please enter the due date")
@@ -266,7 +268,7 @@ function page() {
       setNewTaskTitleError("Please enter the title")
       return;
     }
-    else if (startDate === "") {
+    else if (newTaskDueDate === "") {
       setNewTaskDueDateError("Please enter the due date")
       return;
     }
@@ -274,11 +276,11 @@ function page() {
       setNewDescriptionError("Please enter the task description")
       return;
     }
-    // else if (!isValidDateFormat(newTaskDueDate.trim())) {
-    //   setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
-    //   return;
+    else if (!isValidDateFormat(newTaskDueDate.trim())) {
+      setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
+      return;
 
-    // }
+    }
 
     try {
 
@@ -385,7 +387,7 @@ function page() {
             title={newTaskTitle}
             setTitle={handleNewTaskTitleChange}
             titleErrorMessage={newTaskTitleError}
-            dueDate={startDate}
+            dueDate={newTaskDueDate}
             setDueDate={handleNewTaskDueDateChange}
             dueDateErrorMessage={newTaskDueDateError}
             description={newTaskDescription}

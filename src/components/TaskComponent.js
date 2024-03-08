@@ -5,7 +5,7 @@ import TasksInProgressIcon from '../resources/SVGs/tasksInprogress';
 
 function TaskItem({ task, onTaskClick }) {
   return (
-    <li className={`p-2 cursor-pointer border-b border-gray-300 pb-4 mb-4 mt-1 ${task.isTaskCompleted ? "bg-lime-400 hover:bg-lime-500 " : "bg-cyan-300 hover:bg-cyan-400 "}rounded-lg drop-shadow-md min-w-30`} onClick={() => onTaskClick(task)}>
+    <li className={`p-2 cursor-pointer border-b border-gray-300 pb-4 mb-4 mt-1 ${task.isTaskCompleted ? "bg-lime-400 hover:bg-lime-500 " : "bg-yellow-300 hover:bg-yellow-400 "}rounded-lg drop-shadow-md min-w-30`} onClick={() => onTaskClick(task)}>
       <div className='flex justify-between border-b border-gray-900'>
         <MainText className={'w-1/3 text-left'}>{" "}</MainText>
         <MainText className={'w-1/3 text-center'}>{task.taskTitle}</MainText>
