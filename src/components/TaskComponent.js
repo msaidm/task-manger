@@ -20,7 +20,7 @@ function TaskItem({ task, onTaskClick }) {
 
 const TaskComponent = ({ IconComponent, title, tasksCount, userTasks, handleTaskClick, completedTasks }) => {
   return (
-    <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-40 mt-5 border border-gray-300'>
+    <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-50 mt-5 border border-gray-300'>
       <div className='items-center flex flex-row justify-between'>
         {completedTasks ? <TasksCompletedIcon /> : <TasksInProgressIcon />}
         <MainText color={"#8C97A8"}>{title}</MainText>

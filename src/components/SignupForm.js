@@ -20,7 +20,7 @@ const SignupForm = ({
 }) => {
   return (
     <div className="flex flex-col items-center bg-gray-100 p-4 rounded-lg shadow-lg">
-      <p className="mb-2">Welcome!</p>
+      <MainText >Welcome!</MainText>
       <MainInput
         type={"text"}
         placeholder={"Name"}
@@ -44,8 +44,8 @@ const SignupForm = ({
         isPassword={true}
         togglePasswordVisibility={toggleShowPassword}
       />
-      
-      
+
+
       <button onClick={handleForm} className="mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Create account
       </button>

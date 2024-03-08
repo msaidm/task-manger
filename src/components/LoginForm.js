@@ -51,7 +51,7 @@ const LoginForm = () => {
 
   const handleEmailChange = (event) => {
     setEmailError("")
-    const emailValue = event.target.value;
+    const emailValue = event.target.value.trim();
     setEmail(emailValue);
 
     // Regular expression for email validation
@@ -75,7 +75,7 @@ const LoginForm = () => {
   }
   const handleEmailLoginChange = (event) => {
     setEmailLoginError("")
-    const emailValue = event.target.value;
+    const emailValue = event.target.value.trim();
     setEmailLogin(emailValue);
 
     // Regular expression for email validation
@@ -93,7 +93,7 @@ const LoginForm = () => {
   // };
   const handlePasswordLoginChange = (event) => {
     setPasswordLoginError("")
-    const newPassword = event.target.value;
+    const newPassword = event.target.value.trim();
     const isPasswordValid = newPassword.length >= 8;
     setPasswordLogin(newPassword);
 
@@ -107,12 +107,25 @@ const LoginForm = () => {
 
   const handlePasswordChange = (event) => {
     setPasswordError("")
-    setPassword(event.target.value);
+    setPassword(event.target.value.trim());
   };
 
   const handleNameChange = (event) => {
-    setNameError("")
-    setName(event.target.value);
+    const newName = event.target.value;
+    
+    // Check if the new name contains only whitespace
+    if (!newName.trim()) {
+      // If the new name contains only whitespace, set the name to an empty string
+      setName("");
+      setNameError("Name cannot be empty");
+    } else if (newName.length > 30) {
+      // If the new name exceeds 15 characters, display an error message
+      setNameError("Name cannot exceed 30 letters");
+    } else {
+      // If the new name contains non-whitespace characters and is within the length limit, update the name
+      setName(newName);
+      setNameError(""); // Clear any existing error messages
+    }
   };
   const handleSignUpClick = () => {
     setEmailLogin("")
@@ -214,7 +227,14 @@ const LoginForm = () => {
         if (errorMessage.includes('auth/invalid-credential')) {
             // Handle the error related to invalid credentials
             alert('Invalid credentials email or password');
-        } else {
+            return;
+        }
+       else if (errorMessage.includes('auth/email-already-in-use')) {
+          // Handle the error related to invalid credentials
+          setEmailError("Email already in use")
+          return;
+      }
+         else {
             // Handle other types of errors
             console.error(error);
         }

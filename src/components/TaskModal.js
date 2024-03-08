@@ -119,35 +119,34 @@ function TaskModal({
 
   const handleAddNewTaskEditSaveButton = async () => {
 
-    console.log(newTaskDescription, "s")
-    if (newTaskDescription === "" && newTaskDueDate === "" && newTaskTitle === "") {
+    if (newTaskDescription.trim() === "" && newTaskDueDate.trim() === "" && newTaskTitle.trim() === "") {
       setNewTaskTitleEditError("Please enter the title")
       setNewDescriptionEditError("Please enter the task description")
       setNewTaskEditDueDateError("Please enter the due date")
       return;
     }
-    else if (newTaskTitle === "") {
+    else if (newTaskTitle.trim() === "") {
       setNewTaskTitleEditError("Please enter the title")
       return;
     }
-    else if (newTaskDueDate === "") {
+    else if (newTaskDueDate.trim() === "") {
       setNewTaskEditDueDateError("Please enter the due date")
       return;
     }
-    else if (newTaskDescription === "") {
+    else if (newTaskDescription.trim() === "") {
       setNewDescriptionEditError("Please enter the task description")
       return;
     }
-    else if (!isValidDateFormat(newTaskDueDate)) {
+    else if (!isValidDateFormat(newTaskDueDate.trim())) {
       setNewTaskEditDueDateError("Please enter the due date in this format M/D/YYYY")
       return;
 
     }
     try {
       let taskData = {
-        taskTitle: newTaskTitle,
-        taskDueDate: newTaskDueDate,
-        taskDescription: newTaskDescription,
+        taskTitle: newTaskTitle.trim(),
+        taskDueDate: newTaskDueDate.trim(),
+        taskDescription: newTaskDescription.trim(),
         userUid: userUid,
         taskId: task.taskId,
         isTaskCompleted: isTaskCompleted,

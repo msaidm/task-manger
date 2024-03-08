@@ -15,6 +15,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../lib/hooks'
 import { useRouter } from 'next/navigation'
+import MainText from '../../../components/MainText'
 
 
 
@@ -249,25 +250,25 @@ function page() {
   };
   const handleAddNewTaskSaveButton = async () => {
     const taskId = generateUniqueId()
-    if (newTaskTitle === "" && newTaskDescription === "" && newTaskDueDate === "") {
+    if (newTaskTitle.trim() === "" && newTaskDescription.trim() === "" && newTaskDueDate.trim() === "") {
       setNewTaskTitleError("Please enter the title")
       setNewDescriptionError("Please enter the task description")
       setNewTaskDueDateError("Please enter the due date")
       return;
     }
-    else if (newTaskTitle === "") {
+    else if (newTaskTitle.trim() === "") {
       setNewTaskTitleError("Please enter the title")
       return;
     }
-    else if (newTaskDueDate === "") {
+    else if (newTaskDueDate.trim() === "") {
       setNewTaskDueDateError("Please enter the due date")
       return;
     }
-    else if (newTaskDescription === "") {
+    else if (newTaskDescription.trim() === "") {
       setNewDescriptionError("Please enter the task description")
       return;
     }
-    else if (!isValidDateFormat(newTaskDueDate)) {
+    else if (!isValidDateFormat(newTaskDueDate.trim())) {
       setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
       return;
 
@@ -275,9 +276,9 @@ function page() {
 
     try {
       let taskData = {
-        taskTitle: newTaskTitle,
-        taskDueDate: newTaskDueDate,
-        taskDescription: newTaskDescription,
+        taskTitle: newTaskTitle.trim(),
+        taskDueDate: newTaskDueDate.trim(),
+        taskDescription: newTaskDescription.trim(),
         userUid: userInfo.uid,
         taskId: taskId,
         isTaskCompleted: false,
@@ -317,6 +318,10 @@ function page() {
 
   return (
     <div className='w-full flex flex-col items-center'>
+      <div className=' w-2/3 h-10 flex mb-10 sm:mb-5 sm:ml-100'>
+        <MainText fontSize={"2em"}>{`Welcome, ${userInfo.name? userInfo.name:""}`}</MainText>
+
+      </div>
       <div className='w-1/2  flex self-center justify-center flex-col sm:flex-row'>
 
         <Suspense fallback={<Skeleton />} >
@@ -388,7 +393,7 @@ function page() {
 
 
       </div>
-      <button onClick={handleNewTaskClick} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-10 w-1/5 self-center min-w-30">
+      <button onClick={handleNewTaskClick} className=" flex bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-10  self-center min-w-90">
         Add a new Task
       </button>
 
