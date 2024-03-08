@@ -246,7 +246,7 @@ function TaskModal({
             checked={isTaskCompleted}
             onChange={handleCheckboxChange}
           />
-          <label htmlFor="completed-checkbox" className="ml-2">
+          <label  htmlFor="completed-checkbox" className="ml-2 text-black">
             Mark as Completed
           </label>
         </div>
