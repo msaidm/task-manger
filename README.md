@@ -1,9 +1,9 @@
 
 [Task Manager App](https://task-manger-t1fs-b2m35abwf-msaidms-projects.vercel.app/)
 
-## System Requirements:
+## Task Manger App:
 
-I used Next.js and Firebase to develop a proficient task management tool. Users have the capability to register accounts, log in, create tasks, edit existing tasks, and delete tasks seamlessly. Each task is equipped with a title, due date, and description, which can be manipulated using a rich text editor for enhanced functionality and user experience.
+I used Next.js and Firebase to develop a proficient task management tool. Users have the capability to register accounts, log in, create tasks, edit existing tasks, and delete tasks seamlessly. Each task is equipped with a title, due date, completion status, and description, which can be manipulated using a rich text editor for enhanced functionality and user experience.
 
 ## System Requirements:
 
