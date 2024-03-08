@@ -166,7 +166,7 @@ function TaskModal({
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
       <div ref={modalRef} className="bg-white w-1/4 rounded-lg p-4 shadow-md min-w-60 ">
-        <IconClose width='20px' height='20px' onClick={onClose} className={"cursor-pointer flex-end"} />
+        <IconClose  width='20px' height='20px' onClick={onClose} className={"cursor-pointer flex-end text-black"} />
         <div className='flex flex-row justify-between items-center'>
           <div>
             {isEditClicked ? (
