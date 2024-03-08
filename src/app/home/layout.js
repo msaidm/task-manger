@@ -1,5 +1,6 @@
-import Sidebar from "@/components/SideBar";
+import Sidebar from "../../components/SideBar";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,9 +15,13 @@ export default function HomeLayout({ children }) {
         
       <body className={inter.className}>
       <main className="flex min-h-screen  p-10 bg-mainHomeBackgroundColor">
+        
         <Sidebar/>
+        <Suspense/>
         {children}
         </main>
+        
+        
        
         
         

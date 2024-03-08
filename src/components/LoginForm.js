@@ -1,12 +1,17 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import signIn from '@/firebase/auth/signin';
+import signIn from '../firebase/auth/signin';
 import MainText from './MainText';
 import SignupForm from './SignupForm';
-import signUp from '@/firebase/auth/signup';
-import addData from '@/firebase/firestore/addData';
+import signUp from '../firebase/auth/signup';
+import addData from '../firebase/firestore/addData';
+import getData from '../firebase/firestore/getData';
+
 import MainInput from './MainInput';
+import { useAppDispatch, useAppStore, useAppSelector } from '../../lib/hooks';
+import { login } from '../../lib/slices/authSlice';
+import { env } from '../Helpers/constans';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,6 +26,24 @@ const LoginForm = () => {
   const [passwordError, setPasswordError] = useState('');
   const [emailLoginError, setEmailLoginError] = useState('');
   const [passwordLoginError, setPasswordLoginError] = useState('');
+
+
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    const userDataString = localStorage.getItem('userData');
+    const userData = JSON.parse(userDataString);
+
+    
+    if (userData) {
+      if(userData.isLoggedIn){
+      dispatch(login({ name: userData.name, uid: userData.uid }));
+      return router.push("/home/tasks")
+      }
+    }
+
+  }, [])
+
 
 
 
@@ -40,7 +63,7 @@ const LoginForm = () => {
       setEmailError('');
     }
   };
-  const checkMailIfValid = (email) =>{
+  const checkMailIfValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(email)) {
@@ -65,16 +88,16 @@ const LoginForm = () => {
     }
   };
   // const handlePasswordLoginChange = (event) => {
-   
+
   //   setPasswordLogin(event.target.value);
   // };
   const handlePasswordLoginChange = (event) => {
     setPasswordLoginError("")
     const newPassword = event.target.value;
-    const isPasswordValid = newPassword.length >=8;
+    const isPasswordValid = newPassword.length >= 8;
     setPasswordLogin(newPassword);
-  
-    
+
+
     if (!isPasswordValid) {
       setPasswordLoginError("Password must be at least 8 characters long.");
     } else {
@@ -86,7 +109,7 @@ const LoginForm = () => {
     setPasswordError("")
     setPassword(event.target.value);
   };
-  
+
   const handleNameChange = (event) => {
     setNameError("")
     setName(event.target.value);
@@ -107,94 +130,116 @@ const LoginForm = () => {
   const handleForm = async (event) => {
     event.preventDefault();
 
-    
-    
-    if(emailLogin==='' && passwordLogin==='' ){
+
+
+    if (emailLogin === '' && passwordLogin === '') {
       setEmailLoginError("Enter email please")
       setPasswordLoginError("Enter password please")
       return;
     }
-    else if(emailLogin===''){
+    else if (emailLogin === '') {
       setEmailLoginError("Enter email please")
       return;
     }
-   else if(passwordLogin.length===0){
+    else if (passwordLogin.length === 0) {
       setPasswordLoginError("Enter password please")
       return;
     }
-    else if(passwordLogin.length<8){
+    else if (passwordLogin.length < 8) {
       setPasswordLoginError("Password must be at least 8 characters long.")
       return;
     }
     const { result, error } = await signIn(emailLogin, passwordLogin);
 
     if (error) {
-      alert(error)
-      return console.log(error);
-    }
-    else if(result){
-      const user =result.user
+      const errorMessage = error.message || ''; 
+  
+      if (errorMessage.includes('auth/invalid-credential')) {
+          alert('Invalid email or password');
+      } else {
+        alert('Error occurred');
+          console.error(error);
+      }
+  }
+    else if (result) {
+      const user = result.user
       //alert(user.uid)
-      return router.push('/home');
-    }
-    
+      const userData = await getData(`Users--${env}`, user.uid)
+      const { name, uid } = userData.result.data()
 
-    // else successful
-    // console.log(result);
-    // return router.push('/admin');
+      dispatch(login({ name: name, uid: uid }));
+      localStorage.setItem('userData', JSON.stringify({ name: name, uid: uid, isLoggedIn: true }));
+
+
+      return router.push('/home/tasks');
+    }
+
   };
 
   const handleSignUpForm = async (event) => {
     try {
       event.preventDefault()
 
-      if(email==='' && password==='' && name==="" ){
+      if (email === '' && password === '' && name === "") {
         setEmailError("Enter email please")
         setPasswordError("Enter password please")
         setNameError("Enter your name please")
         return;
       }
-      else if(email===''){
+      else if (email === '') {
         setEmailError("Enter email please")
         return;
       }
-     else if(password.length===0){
+      else if (password.length === 0) {
         setPasswordError("Enter password please")
         return;
       }
-      else if(password.length<8){
+      else if (password.length < 8) {
         setPasswordError("Password must be at least 8 characters long.")
         return;
       }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!checkMailIfValid(email)) {
-      setEmailLoginError('Invalid email address');
-      return;
-    } 
-    const { result, error } = await signUp(email, password);
+      if (!checkMailIfValid(email)) {
+        setEmailLoginError('Invalid email address');
+        return;
+      }
+      const { result, error } = await signUp(email, password);
 
       if (error) {
-        alert(error)
-        return console.log(error)
-      }
+        const errorMessage = error.message || ''; // Get the error message
+    
+        // Check if the error message contains the specified string
+        if (errorMessage.includes('auth/invalid-credential')) {
+            // Handle the error related to invalid credentials
+            alert('Invalid credentials email or password');
+        } else {
+            // Handle other types of errors
+            console.error(error);
+        }
+    }
 
       // else successful
-      console.log(result)
-      alert(email)
+      
       const { uid } = result.user
       let userData = {
         name: name,
         uid: uid,
         password: password,
-        email:email,
+        email: email,
       }
-      await addData("Users", result.user.uid, userData)
+
+      //const name = useAppSelector(state => console.log(state.authReducer.name))
+
+      dispatch(login({ name: name, uid: uid }));
+      await addData(`Users--${env}`, result.user.uid, userData)
+      localStorage.setItem('userData', JSON.stringify({ name: name, uid: uid, isLoggedIn: true }));
+
+      return router.push('/home/tasks');
 
     } catch (error) {
       alert(error)
-      console.log(error)
     }
 
     // return router.push("/admin")
@@ -244,11 +289,11 @@ const LoginForm = () => {
         errorMessage={passwordLoginError}
         isPassword={true}
         togglePasswordVisibility={toggleShowPassword}
-        
-      ></MainInput>
-      
 
-    
+      ></MainInput>
+
+
+
       <button onClick={handleForm} className="mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Log In
       </button>

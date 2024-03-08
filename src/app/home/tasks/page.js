@@ -1,200 +1,308 @@
 'use client'
-import Editor from '@/components/Editor'
-import MainInput from '@/components/MainInput'
-import MainText from '@/components/MainText'
-import IconClose from '@/resorces/SVGs/exitIcon'
-import TasksCompletedIcon from '@/resorces/SVGs/tasksCompleted'
-import TasksInProgressIcon from '@/resorces/SVGs/tasksInprogress'
-import React, { useState, useRef, useEffect } from 'react'
+import { env } from '../../../Helpers/constans'
+import { generateUniqueId, isValidDateFormat, useSeparateTasks } from '../../../Helpers/tools'
 
-// ... other components
-
-function Modal({ task, onClose, onUpdate, onDelete, onClickEdit }) {
-  const [isChecked, setIsChecked] = useState(task.completed || false); // Initialize based on task.completed if present
-  const [isEditClicked, setIsEditClicked] = useState(false);
-  const [content, setContent] = useState('');
-
-  const modalRef = useRef(null);
+import NewTaskModal from '../../../components/NewTaskModal'
+import TaskModal from '../../../components/TaskModal'
+import addData from '../../../firebase/firestore/addData'
+import deleteTask from '../../../firebase/firestore/deleteTask'
+import getTasksForUser from '../../../firebase/firestore/getTasks'
+import TasksCompletedIcon from '../../../resorces/SVGs/tasksCompleted'
+import React, { useState, useRef, useEffect, useMemo, Suspense } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 
-  const handleCheckboxChange = () => {
-    setIsChecked(!isChecked);
-    onUpdate({ ...task, completed: !isChecked }); // Update task with new completed state
-  };
-  const handleEditorChange = (newContent) => {
-    console.log(newContent)
-    setContent(newContent);
-};
-
-  const handleSave = () => {
-    // Implement logic to save the updated task (e.g., call an API)
-    onClose(); // Close the modal after saving
-  };
-  const handleEdit = () => {
-    // Implement logic to save the updated task (e.g., call an API)
-    setIsEditClicked(true) // Close the modal after saving
-  };
-
-  const handleDelete = () => {
-    onDelete(task.id); // Delete the task by its id
-    onClose(); // Close the modal after deletion
-  };
-  const handleCancel = () => {
-    setIsEditClicked(false)
-  };
-
-  const handleClickOutside = (event) => {
-    if (modalRef.current && !modalRef.current.contains(event.target)) {
-      onClose();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () => document.removeEventListener('click', handleClickOutside, true);
-  }, []);
-
-  return (
-    <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-      <div ref={modalRef} className="bg-white  w-1/4 rounded-lg p-4 shadow-md min-w-60">
-        <IconClose width='20px' height='20px' onClick={onClose} className={"cursor-pointer flex-end"} />
-        <div className='flex flex-row justify-between items-center'>
-          <div>
-            {isEditClicked ? (
-              <div>
-                <label className="block mt-1">
-                  <MainText>Title:</MainText>
-                </label>
-                <MainInput value={task.title}></MainInput>
-
-              </div>
-            ) : (
-              <div>
-                <label className="block mt-1">
-                  <MainText>Title:</MainText>
-                </label>
-                <MainText color={"#8C97A8"}>{task.title}</MainText>
-
-              </div>
-            )}
-          </div>
-
-
-          {!isEditClicked && (
-            <button onClick={handleEdit} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Edit</button>
-          )}
-
-        </div>
-        <div>
-          {isEditClicked ? (
-            <div>
-              <label className="block mt-1">
-                <MainText>Due Date:</MainText>
-              </label>
-              <div>
-                <MainInput width={"w-2"} value={task.dueDate}></MainInput>
-              </div>
-
-            </div>
-          ) : (
-            <div>
-              <label className="block mt-1">
-                <MainText>Due Date:</MainText>
-              </label>
-              <MainText color={"#8C97A8"}>{task.dueDate}</MainText>
-
-            </div>
-          )}
-        </div>
-        <div>
-          {isEditClicked ? (
-            <div>
-              <label className="block mt-1">
-                <MainText>Description:</MainText>
-              </label>
-              {/* <MainInput value={task.description}></MainInput> */}
-              <Editor value={content} onChangeValue={handleEditorChange}/>
-
-            </div>
-          ) : (
-            <div>
-              <label className="block mt-1">
-                <MainText>Description:</MainText>
-              </label>
-              <MainText color={"#8C97A8"}>{task.description}</MainText>
-
-            </div>
-          )}
-        </div>
+import { useAppSelector, useAppDispatch, useAppStore } from '../../../../lib/hooks'
+import { useRouter } from 'next/navigation'
 
 
 
-
-        {/* Completed checkbox */}
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="completed-checkbox"
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-          />
-          <label htmlFor="completed-checkbox" className="ml-2">
-            Mark as Completed
-          </label>
-        </div>
-
-        {/* Save button */}
-        <div className='flex flex-row item-center justify-center'>
-          <button onClick={handleSave} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">
-            Save
-          </button>
-          {!isEditClicked && (
-            <button onClick={handleDelete} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2">
-              Delete
-            </button>
-          )}
-
-          {isEditClicked && (
-            <button onClick={handleCancel} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
-          )}
-
-        </div>
-        {/* <div className='flex flex-row item-center justify-center mt-2'>
-        <button onClick={handleDelete} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mr-2">
-            Delete
-          </button>
-        </div> */}
-
-      </div>
-    </div>
-  );
-}
-
-function TaskItem({ task, onTaskClick }) {
-  return (
-    <li className="cursor-pointer border-b border-gray-300 pb-4 mb-4 mt-1" onClick={() => onTaskClick(task)}>
-      <MainText>{task.title}</MainText>
-      <MainText>{task.description}</MainText>
-    </li>
-  );
-}
-
-
+const TaskLazyComponent = React.lazy(() => import("../../../components/TaskComponent"));
 
 function page() {
   // Dummy data for tasks
-  const [selectedTask, setSelectedTask] = useState();
+  const [selectedTask, setSelectedTask] = useState("");
+  const [addNewTaskClicked, setAddNewTaskClicked] = useState(false);
+  const [showNewTaskModal, setShowNewTaskModal] = useState(false)
+
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskTitleError, setNewTaskTitleError] = useState("");
+
+  const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [newTaskDueDateError, setNewTaskDueDateError] = useState("");
 
 
-  const tasks = [
-    { id: '1', title: 'Task 1', description: 'Description of Task 1', dueDate: '1/1/2024', dueClock: "2:09 PM" },
-    { id: '2', title: 'Task 2', description: 'Description of Task 2', dueDate: '1/2/2024', dueClock: "2:09 PM" },
-    // Add more tasks as needed
-  ];
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [newTaskDescriptionError, setNewDescriptionError] = useState("");
 
+  const [newTaskEditTitle, setNewTaskEditTitle] = useState("");
+  const [newTaskTitleEditError, setNewTaskTitleEditError] = useState("");
+
+  const [newTaskEditDueDate, setNewTaskEditDueDate] = useState("");
+  const [newTaskDueDateEditError, setNewTaskEditDueDateError] = useState("");
+
+
+  const [newTaskEditDescription, setNewTaskEditDescription] = useState("");
+  const [newTaskDescriptionEditError, setNewDescriptionEditError] = useState("");
+
+  const [isTaskCompleted, setIsTaskCompleted] = useState("");
+
+
+  const [userTasks, setUserTasks] = useState([]);
+  const [userInfo, setUserInfo] = useState({});
+
+  const router = useRouter();
+
+  const [userInProgressTasks, setUserInProgressTasks] = useState([]);
+
+  // Initialize the store with the product information
+  const store = useAppStore()
+  const initialized = useRef(false)
+  // if (!initialized.current) {
+  //   store.dispatch(l(product))
+  //   initialized.current = true
+  // }
+  const userInfoRedux = useAppSelector(state => state.authReducer)
+  const dispatch = useAppDispatch()
+
+
+
+
+
+
+
+  useEffect(() => {
+    const userDataString = localStorage.getItem('userData');
+    const userData = JSON.parse(userDataString);
+    if (!userData.isLoggedIn) {
+      return router.push('/')
+    }
+
+    setUserInfo(userData)
+    fetchData(userData.uid)
+  }, []);
+
+  const fetchData = async (uid) => {
+    try {
+      const { tasks, error } = await getTasksForUser(uid);
+
+      if (error) {
+        setError(error.message);
+        alert(error);
+      } else {
+
+        const { completedTasks, incompleteTasks } = separateTasks(tasks)
+        setUserTasks(completedTasks);
+        setUserInProgressTasks(incompleteTasks)
+        //alert(tasks)
+      }
+    } catch (error) {
+      alert(error)
+      //setError(error.message);
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  function separateTasks(tasks) {
+    const completedTasks = [];
+    const incompleteTasks = [];
+
+    tasks.forEach(task => {
+      if (task.isTaskCompleted) {
+        completedTasks.push(task);
+      } else {
+        incompleteTasks.push(task);
+      }
+    });
+
+    return { completedTasks, incompleteTasks };
+  }
+
+
+
+  // Update the state accordingly
+
+
+
+
+
+
+
+
+  const handleNewTaskTitleChange = (event) => {
+    if (event) {
+      setNewTaskTitleError("")
+      setNewTaskTitle(event.target.value);
+    }
+    else {
+      setNewTaskTitle("");
+    }
+
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      await deleteTask(`Tasks--${env}`, taskId)
+      setSelectedTask(undefined)
+      fetchData(userInfo.uid)
+    } catch (error) {
+
+    }
+
+  };
+  const handleNewTaskDueDateChange = (event) => {
+    if (event) {
+      setNewTaskDueDateError("")
+      setNewTaskDueDate(event.target.value);
+    }
+    else {
+      setNewTaskDueDate('');
+    }
+
+
+  };
+
+
+  const handleNewTaskEditDescriptionsChange = (newContent) => {
+    setNewDescriptionEditError('')
+
+    setNewTaskEditDescription(newContent);
+  };
+
+  const handleNewTaskEditTitleChange = (event) => {
+    if (event) {
+      setNewTaskTitleEditError("")
+      setNewTaskEditTitle(event.target.value);
+    }
+    else {
+      setNewTaskEditTitle("");
+    }
+
+  };
+  const handleNewTaskEditDueDateChange = (event) => {
+    if (event) {
+      setNewTaskEditDueDateError("")
+      setNewTaskEditDueDate(event.target.value);
+    }
+    else {
+      setNewTaskEditDueDate('');
+    }
+
+  };
+
+  const handleChangeIsCompleted = () => {
+    setIsTaskCompleted(prev => !prev)
+
+  };
+
+  const handleAddNewTaskEditSaveButton = async () => {
+    const taskId = generateUniqueId()
+    if (newTaskEditTitle === "" && newTaskEditDescription === "" && newTaskEditDueDate === "") {
+      setNewTaskTitleError("Please enter the title")
+      setNewDescriptionError("Please enter the task description")
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskEditTitle === "") {
+      setNewTaskTitleError("Please enter the title")
+      return;
+    }
+    else if (newTaskEditDueDate === "") {
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskEditDescription === "") {
+      setNewDescriptionError("Please enter the task description")
+      return;
+    }
+    else if (!isValidDateFormat(newTaskEditDueDate)) {
+      setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
+      return;
+
+    }
+    try {
+      let taskData = {
+        taskTitle: newTaskTitle,
+        taskDueDate: newTaskDueDate,
+        taskDescription: newTaskDescription,
+        userUid: userInfo.uid,
+        taskId: taskId,
+        isTaskCompleted: false,
+      }
+      await addData(`Tasks--${env}`, taskId, taskData)
+      setShowNewTaskModal(false)
+      return true
+
+    } catch (error) {
+      alert(error)
+      return false
+    }
+
+  };
+  {/*---------END Edit Task Functions--------------- */ }
+  const handleNewTaskDescriptionsChange = (newContent) => {
+    setNewDescriptionError('')
+
+    setNewTaskDescription(newContent);
+  };
+  const handleAddNewTaskSaveButton = async () => {
+    const taskId = generateUniqueId()
+    if (newTaskTitle === "" && newTaskDescription === "" && newTaskDueDate === "") {
+      setNewTaskTitleError("Please enter the title")
+      setNewDescriptionError("Please enter the task description")
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskTitle === "") {
+      setNewTaskTitleError("Please enter the title")
+      return;
+    }
+    else if (newTaskDueDate === "") {
+      setNewTaskDueDateError("Please enter the due date")
+      return;
+    }
+    else if (newTaskDescription === "") {
+      setNewDescriptionError("Please enter the task description")
+      return;
+    }
+    else if (!isValidDateFormat(newTaskDueDate)) {
+      setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
+      return;
+
+    }
+
+    try {
+      let taskData = {
+        taskTitle: newTaskTitle,
+        taskDueDate: newTaskDueDate,
+        taskDescription: newTaskDescription,
+        userUid: userInfo.uid,
+        taskId: taskId,
+        isTaskCompleted: false,
+      }
+      await addData(`Tasks--${env}`, taskId, taskData)
+      fetchData(userInfo.uid)
+      setShowNewTaskModal(false)
+      return true
+
+    } catch (error) {
+      alert(error)
+      return false
+    }
+
+
+
+
+  };
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
+  };
+  const handleNewTaskClick = (task) => {
+    //setAddNewTaskClicked(task);
+    setShowNewTaskModal(true)
   };
   const handleEditClick = (task) => {
     setOnEditIsClicked(task);
@@ -203,50 +311,86 @@ function page() {
   const handleCloseModal = () => {
     setSelectedTask(null);
   };
+  const handleCloseNewTaskModal = () => {
+    setShowNewTaskModal(false);
+  };
 
   return (
-    <div className='w-full flex justify-center'>
-      <div className='w-1/2  flex  flex-col sm:flex-row'>
-        <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-40 mt-5 border border-gray-300'>
-          <div className='items-center flex flex-row justify-between'>
-            <TasksCompletedIcon />
-            <MainText color={"#8C97A8"}>Tasks Completed</MainText>
-            <MainText>90</MainText>
-          </div>
-          <div className="h-px grayText mt-2 bg-grayText"></div>
+    <div className='w-full flex flex-col items-center'>
+      <div className='w-1/2  flex self-center justify-center flex-col sm:flex-row'>
 
-          {/* Render tasks using a scrollable container */}
-          <div className="h-60 overflow-y-auto">
-            <ul>
-              {tasks.map(task => (
-                <TaskItem key={task.id} task={task} onTaskClick={handleTaskClick} />
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-40 mt-5 border border-gray-300'>
-          <div className='items-center flex flex-row justify-between'>
-            <TasksInProgressIcon />
-            <MainText color={"#8C97A8"}>Tasks In Progress</MainText>
-            <MainText>90</MainText>
-          </div>
-          <div className="h-px grayText mt-2 bg-grayText"></div>
+        <Suspense fallback={<Skeleton />} >
+          <TaskLazyComponent
+            IconComponent={TasksCompletedIcon}
+            title="To-Do List"
+            tasksCount={userInProgressTasks.length}
+            userTasks={userInProgressTasks}
+            handleTaskClick={handleTaskClick}
+            completedTasks={false}
+          />
 
-          {/* Render tasks using a scrollable container */}
-          <div className="h-60 overflow-y-auto">
-            <ul>
-              {tasks.map(task => (
-                <TaskItem key={task.id} task={task} onTaskClick={handleTaskClick} />
-              ))}
-            </ul>
-          </div>
-        </div>
+          {userTasks.length > 0 && (
+            <TaskLazyComponent
+              IconComponent={TasksCompletedIcon}
+              title="Tasks Completed"
+              tasksCount={userTasks.length}
+              userTasks={userTasks}
+              handleTaskClick={handleTaskClick}
+              completedTasks={true}
+            />
+
+          )}
+
+
+        </Suspense>
+
 
         {/* Modal */}
         {selectedTask && (
-          <Modal task={selectedTask} onClose={handleCloseModal} onClickEdit={handleEditClick} />
+          <TaskModal
+            onClose={handleCloseModal}
+            onClickEdit={handleEditClick}
+            title={newTaskEditTitle}
+            setTitle={handleNewTaskEditTitleChange}
+            titleErrorMessage={newTaskTitleEditError}
+            dueDate={newTaskEditDueDate}
+            setDueDate={handleNewTaskEditDueDateChange}
+            dueDateErrorMessage={newTaskDueDateEditError}
+            description={newTaskEditDescription}
+            setDescription={handleNewTaskEditDescriptionsChange}
+            descriptionError={newTaskDescriptionEditError}
+            task={selectedTask}
+            onSave={handleAddNewTaskEditSaveButton}
+            fetchData={fetchData}
+            handleDeleteTask={handleDeleteTask}
+            userUid={userInfo.uid}
+
+          />
         )}
+        {showNewTaskModal && (
+          <NewTaskModal
+            title={newTaskTitle}
+            setTitle={handleNewTaskTitleChange}
+            titleErrorMessage={newTaskTitleError}
+            dueDate={newTaskDueDate}
+            setDueDate={handleNewTaskDueDateChange}
+            dueDateErrorMessage={newTaskDueDateError}
+            description={newTaskDescription}
+            setDescription={handleNewTaskDescriptionsChange}
+            descriptionError={newTaskDescriptionError}
+            task={selectedTask}
+            onClose={handleCloseNewTaskModal}
+            handleEditorChange={handleEditClick}
+            onSave={handleAddNewTaskSaveButton}
+          />
+        )}
+
+
+
       </div>
+      <button onClick={handleNewTaskClick} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-10 w-1/5 self-center min-w-30">
+        Add a new Task
+      </button>
 
     </div>
   );
