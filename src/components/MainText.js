@@ -3,7 +3,7 @@ import React from 'react';
 const MainText = ({ children, className, fontSize, color, fontFamily, style, htmlContent }) => {
     const textStyle = {
         fontSize: fontSize || 'inherit',
-        color: color || '#FFFFFF',
+        color: color || '#000000',
         fontFamily: fontFamily || 'inherit',
         ...style,
     };
