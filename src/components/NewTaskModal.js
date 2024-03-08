@@ -1,10 +1,8 @@
 'use client'
-import Editor from '@/components/Editor'
-import MainInput from '@/components/MainInput'
-import MainText from '@/components/MainText'
-import IconClose from '@/resorces/SVGs/exitIcon'
-import TasksCompletedIcon from '@/resorces/SVGs/tasksCompleted'
-import TasksInProgressIcon from '@/resorces/SVGs/tasksInprogress'
+import Editor from '../components/Editor'
+import MainInput from '../components/MainInput'
+import MainText from '../components/MainText'
+import IconClose from '../resorces/SVGs/exitIcon'
 import React, { useState, useRef, useEffect } from 'react'
 
 function NewTaskModal({

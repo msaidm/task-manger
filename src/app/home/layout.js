@@ -1,4 +1,4 @@
-import Sidebar from "@/components/SideBar";
+import Sidebar from "../../components/SideBar";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
 

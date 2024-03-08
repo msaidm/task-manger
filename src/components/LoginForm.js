@@ -1,17 +1,17 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import signIn from '@/firebase/auth/signin';
+import signIn from '../firebase/auth/signin';
 import MainText from './MainText';
 import SignupForm from './SignupForm';
-import signUp from '@/firebase/auth/signup';
-import addData from '@/firebase/firestore/addData';
-import getData from '@/firebase/firestore/getData';
+import signUp from '../firebase/auth/signup';
+import addData from '../firebase/firestore/addData';
+import getData from '../firebase/firestore/getData';
 
 import MainInput from './MainInput';
 import { useAppDispatch, useAppStore, useAppSelector } from '../../lib/hooks';
 import { login } from '../../lib/slices/authSlice';
-import { env } from '@/Helpers/constans';
+import { env } from '../Helpers/constans';
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,9 +35,11 @@ const LoginForm = () => {
     const userData = JSON.parse(userDataString);
 
     
-    if (userData.isLoggedIn) {
+    if (userData) {
+      if(userData.isLoggedIn){
       dispatch(login({ name: userData.name, uid: userData.uid }));
       return router.push("/home/tasks")
+      }
     }
 
   }, [])

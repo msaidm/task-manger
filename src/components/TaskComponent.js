@@ -1,7 +1,7 @@
 import React from 'react';
 import MainText from './MainText';
-import TasksCompletedIcon from '@/resorces/SVGs/tasksCompleted';
-import TasksInProgressIcon from '@/resorces/SVGs/tasksInprogress';
+import TasksCompletedIcon from '../resorces/SVGs/tasksCompleted';
+import TasksInProgressIcon from '../resorces/SVGs/tasksInprogress';
 
 function TaskItem({ task, onTaskClick }) {
   return (

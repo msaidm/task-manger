@@ -3,9 +3,8 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import MainText from './MainText';
 import { useState } from 'react';
-import IconListTask from '@/resorces/SVGs/tasksIcon';
-import IconAccountOutline from '@/resorces/SVGs/profileIcon';
-import IconLogoutBoxLine from '@/resorces/SVGs/logoutIcon';
+import IconListTask from '../resorces/SVGs/tasksIcon';
+import IconLogoutBoxLine from '../resorces/SVGs/logoutIcon';
 
 const Sidebar = () => {
     const router = useRouter();
@@ -21,9 +20,15 @@ const Sidebar = () => {
     };
 
     const handleAccountClick = () => {
-        setIsTaskClicked(true)
-        localStorage.setItem('userData', JSON.stringify({ name: "", uid: '',isLoggedIn:false }));
+        //setIsTaskClicked(true)
+        try {
+            localStorage.setItem('userData', JSON.stringify({ name: "", uid: '',isLoggedIn:false }));
         router.push('/');
+            
+        } catch (error) {
+            alert(error)
+        }
+        
     };
 
 

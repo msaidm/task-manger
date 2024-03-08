@@ -1,6 +1,6 @@
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 import firebase_app from '../config';
-import { env } from '@/Helpers/constans';
+import { env } from '../../Helpers/constans'
 
 const db = getFirestore(firebase_app);
 

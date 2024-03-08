@@ -1,13 +1,12 @@
 'use client'
-import { env } from '@/Helpers/constans'
-import { generateUniqueId, isValidDateFormat } from '@/Helpers/tools'
-import Editor from '@/components/Editor'
-import MainInput from '@/components/MainInput'
-import MainText from '@/components/MainText'
-import updateData from '@/firebase/firestore/updateData'
-import IconClose from '@/resorces/SVGs/exitIcon'
-import TasksCompletedIcon from '@/resorces/SVGs/tasksCompleted'
-import TasksInProgressIcon from '@/resorces/SVGs/tasksInprogress'
+import { env } from '../Helpers/constans'
+import { generateUniqueId, isValidDateFormat } from '../Helpers/tools'
+import Editor from '../components/Editor'
+import MainInput from '../components/MainInput'
+import MainText from '../components/MainText'
+import updateData from '../firebase/firestore/updateData'
+import IconClose from '../resorces/SVGs/exitIcon'
+
 import React, { useState, useRef, useEffect } from 'react'
 
 function TaskModal({
