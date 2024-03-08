@@ -1,5 +1,5 @@
 
-[Task Manager App](https://task-manger-t1fs-b2m35abwf-msaidms-projects.vercel.app/)
+[Task Manager App](https://task-manger-t1fs.vercel.app/)
 
 ## Task Manger App:
 
