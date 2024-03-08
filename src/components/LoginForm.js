@@ -297,7 +297,7 @@ const LoginForm = () => {
       <button onClick={handleForm} className="mt-8 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Log In
       </button>
-      <p className="mt-4 mb-2">
+      <p className="mt-4 mb-2 text-black">
         Don't have an account?{' '}
         <span style={{ cursor: 'pointer' }} onClick={handleSignUpClick} className="text-black underline ">Sign up now!</span>
       </p>
