@@ -24,7 +24,7 @@ npm next dev
 Open your browser and navigate to http://localhost:3000 to see the result.
 
 ## Project Structure
-
+```
 .
 ├── src
 │   ├── app
@@ -42,3 +42,4 @@ Open your browser and navigate to http://localhost:3000 to see the result.
 ├── package.json
 ├── README.md
 └── ...
+```
