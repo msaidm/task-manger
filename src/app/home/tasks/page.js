@@ -53,9 +53,13 @@ function page() {
   const [userTasks, setUserTasks] = useState([]);
   const [userInfo, setUserInfo] = useState({});
 
+
   const router = useRouter();
 
   const [userInProgressTasks, setUserInProgressTasks] = useState([]);
+
+  const [startDate, setStartDate] = useState(new Date());
+
 
   // Initialize the store with the product information
   const store = useAppStore()
@@ -76,8 +80,10 @@ function page() {
   useEffect(() => {
     const userDataString = localStorage.getItem('userData');
     const userData = JSON.parse(userDataString);
-    if (!userData.isLoggedIn) {
-      return router.push('/')
+    if (userData) {
+      if (!userData.isLoggedIn) {
+        return router.push('/')
+      }
     }
 
     setUserInfo(userData)
@@ -153,10 +159,10 @@ function page() {
     }
 
   };
-  const handleNewTaskDueDateChange = (event) => {
-    if (event) {
-      setNewTaskDueDateError("")
-      setNewTaskDueDate(event.target.value);
+  const handleNewTaskDueDateChange = (date) => {
+    if (date) {
+      setStartDate(date)
+
     }
     else {
       setNewTaskDueDate('');
@@ -250,7 +256,7 @@ function page() {
   };
   const handleAddNewTaskSaveButton = async () => {
     const taskId = generateUniqueId()
-    if (newTaskTitle.trim() === "" && newTaskDescription.trim() === "" && newTaskDueDate.trim() === "") {
+    if (newTaskTitle.trim() === "" && newTaskDescription.trim() === "" && startDate === "") {
       setNewTaskTitleError("Please enter the title")
       setNewDescriptionError("Please enter the task description")
       setNewTaskDueDateError("Please enter the due date")
@@ -260,7 +266,7 @@ function page() {
       setNewTaskTitleError("Please enter the title")
       return;
     }
-    else if (newTaskDueDate.trim() === "") {
+    else if (startDate === "") {
       setNewTaskDueDateError("Please enter the due date")
       return;
     }
@@ -268,16 +274,17 @@ function page() {
       setNewDescriptionError("Please enter the task description")
       return;
     }
-    else if (!isValidDateFormat(newTaskDueDate.trim())) {
-      setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
-      return;
+    // else if (!isValidDateFormat(newTaskDueDate.trim())) {
+    //   setNewTaskDueDateError("Please enter the due date in this format M/D/YYYY")
+    //   return;
 
-    }
+    // }
 
     try {
+
       let taskData = {
         taskTitle: newTaskTitle.trim(),
-        taskDueDate: newTaskDueDate.trim(),
+        taskDueDate: startDate.getDate(),
         taskDescription: newTaskDescription.trim(),
         userUid: userInfo.uid,
         taskId: taskId,
@@ -318,9 +325,10 @@ function page() {
 
   return (
     <div className='w-full flex flex-col items-center'>
-      <div className=' w-2/3 h-10 flex mb-10 sm:mb-5 sm:ml-100'>
-        <MainText fontSize={"2em"}>{`Welcome, ${userInfo.name? userInfo.name:""}`}</MainText>
-
+      <div className='h-10 mb-10 sm:mb-5 sm:ml-100'>
+        <MainText className='' fontSize="2em">
+          {`Welcome, ${userInfo.name ? userInfo.name : ""}`}
+        </MainText>
       </div>
       <div className='w-1/2  flex self-center justify-center flex-col sm:flex-row'>
 
@@ -377,7 +385,7 @@ function page() {
             title={newTaskTitle}
             setTitle={handleNewTaskTitleChange}
             titleErrorMessage={newTaskTitleError}
-            dueDate={newTaskDueDate}
+            dueDate={startDate}
             setDueDate={handleNewTaskDueDateChange}
             dueDateErrorMessage={newTaskDueDateError}
             description={newTaskDescription}

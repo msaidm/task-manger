@@ -7,10 +7,10 @@ function TaskItem({ task, onTaskClick }) {
   return (
     <li className={`p-2 cursor-pointer border-b border-gray-300 pb-4 mb-4 mt-1 ${task.isTaskCompleted ? "bg-lime-400 hover:bg-lime-500 " : "bg-cyan-300 hover:bg-cyan-400 "}rounded-lg drop-shadow-md min-w-30`} onClick={() => onTaskClick(task)}>
       <div className='flex justify-between border-b border-gray-900'>
-  <MainText className={'w-1/3'}>{" "}</MainText>
-  <MainText className={'w-1/3 text-center '}>{task.taskTitle}</MainText>
-  <MainText className={'w-1/3 text-end '}>{task.taskDueDate}</MainText>
-</div>
+        <MainText className={'w-1/3 text-left'}>{" "}</MainText>
+        <MainText className={'w-1/3 text-center'}>{task.taskTitle}</MainText>
+        <MainText className={'w-1/3 text-right mr-1'}>{task.taskDueDate}</MainText>
+      </div>
       <div className={'w-full overflow-hidden'}>
         <MainText htmlContent={task.taskDescription}></MainText>
       </div>
@@ -20,13 +20,13 @@ function TaskItem({ task, onTaskClick }) {
 
 const TaskComponent = ({ IconComponent, title, tasksCount, userTasks, handleTaskClick, completedTasks }) => {
   return (
-    <div className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-50 mt-5 border border-gray-300'>
+    <div style={{ minWidth: 200 }} className='w-1/2 bg-white rounded-lg self-start mr-5 p-4 shadow-lg min-w-50 mt-5 border border-gray-300'>
       <div className='items-center flex flex-row justify-between'>
         {completedTasks ? <TasksCompletedIcon /> : <TasksInProgressIcon />}
         <MainText color={"#8C97A8"}>{title}</MainText>
-        <MainText color={tasksCount>0?"#000000":"#FFFFFF"} >{tasksCount}</MainText>
+        <MainText color={tasksCount > 0 ? "#000000" : "#FFFFFF"} >{tasksCount}</MainText>
       </div>
-     
+
 
       {/* Render tasks using a scrollable container */}
       {tasksCount > 0 ?
