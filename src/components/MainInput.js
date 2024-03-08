@@ -10,7 +10,7 @@ const MainInput = ({ type, placeholder, value, onChange, errorMessage, isPasswor
       <input
         type={type ? type : "text"}
         placeholder={placeholder}
-        className={"flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"}
+        className={"flex-grow p-2 rounded-lg border text-black border-gray-300 focus:outline-none focus:border-blue-500"}
         value={value}
         onChange={onChange}
       />
