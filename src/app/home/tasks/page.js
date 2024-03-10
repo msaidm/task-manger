@@ -286,7 +286,7 @@ function page() {
 
       let taskData = {
         taskTitle: newTaskTitle.trim(),
-        taskDueDate: startDate.getDate(),
+        taskDueDate: newTaskDueDate,
         taskDescription: newTaskDescription.trim(),
         userUid: userInfo.uid,
         taskId: taskId,
